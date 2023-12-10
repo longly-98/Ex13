@@ -9,7 +9,13 @@ namespace Ex13
 		{
 			Console.WriteLine("Welcome to the Employee Management App!");
 			bool exit = false;
-			EmployeeService employeeService = new EmployeeService();
+
+			CommonService common = new CommonService();
+			ExperienceService experience = new ExperienceService(common);
+			FresherService fresher = new FresherService(common);
+			InternService intern = new InternService(common);
+			EmployeeService employeeService = new EmployeeService(common, experience, fresher, intern);
+
 			while (!exit)
 			{
 				Console.WriteLine("\n=====================================\n");
@@ -17,11 +23,7 @@ namespace Ex13
 				Console.WriteLine("0 - Add Employee\n1 - Edit Employee Profile\n2 - Delete Employee\n3 - Search\n4 - Clear\n5 - Exit");
 
 				int inputTyped = 0;
-				try
-				{
-					inputTyped = Convert.ToInt32(Console.ReadLine());
-				}
-				catch (FormatException)
+				if (!int.TryParse(Console.ReadLine(), out inputTyped))
 				{
 					Console.WriteLine("That's not a valid syntax. Please retype!");
 					continue;

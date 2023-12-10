@@ -2,48 +2,22 @@
 using System;
 using System.Data;
 using System.Text.RegularExpressions;
+using static Ex13.validators.EmployeeException;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Ex13.validators
 {
-	class BirthdayException : Exception
+	public static class EmployeeValidator
 	{
-		public BirthdayException(string msg) : base(msg) { }
-	}
-
-	class FullnameException : Exception
-	{
-		public FullnameException(string msg) : base(msg) { }
-	}
-
-	class PhoneException : Exception
-	{
-		public PhoneException(string msg) : base(msg) { }
-	}
-
-	class EmailException : Exception
-	{
-		public EmailException(string msg) : base(msg) { }
-	}
-
-	static class EmployeeValidator
-	{
-		public static void ValidateBirthday(string input)
+		public static DateOnly ValidateBirthday(string? input)
 		{
 			if (input == null || input == "")
 			{
 				throw new BirthdayException("Invalid Birthday!");
 			}
-			try
-			{
-				DateOnly.Parse(input);
-			}
-			catch (FormatException)
-			{
-				throw new BirthdayException("Invalid Birthday!");
-			}
+			return ValidateDate(input);
 		}
-		public static void ValidateFullname(string input)
+		public static void ValidateFullname(string? input)
 		{
 			if (input == null || input == "")
 			{
@@ -51,7 +25,7 @@ namespace Ex13.validators
 			}
 		}
 
-		public static void ValidatePhone(string input)
+		public static void ValidatePhone(string? input)
 		{
 			if (input == null || input == "" || !input.All(char.IsDigit))
 			{
@@ -59,22 +33,42 @@ namespace Ex13.validators
 			}
 		}
 
-		public static void ValidateEmail(string input)
+		public static void ValidateEmail(string? input)
 		{
 			string pattern = @"^[^@\s]+@[^@\s]+\.[^@\s]+$";
 			Regex regex = new Regex(pattern);
-			if (input == null || input == "" || regex.IsMatch(input))
+			if (input == null || input == "" || !regex.IsMatch(input))
 			{
 				throw new EmailException("Invalid Email!");
 			}
 		}
 
-		public static void ValidateInput(string input)
+		public static void ValidateEmpty(string? input)
 		{
 			if (string.IsNullOrEmpty(input))
 			{
-				throw new NoNullAllowedException();
+				throw new NoNullAllowedException("Field can't be null");
 			}
+		}
+
+		public static DateOnly ValidateDate(string? input)
+		{
+			if (!DateOnly.TryParse(input, out DateOnly date))
+			{
+				throw new FormatException("Wrong date format");
+			}
+			return date;
+		}
+
+		public static int ValidateInt(string? input)
+		{
+			ValidateEmpty(input);
+
+			if (!int.TryParse(input, out int number))
+			{
+				throw new InvalidDataException("Invalid input number");
+			}
+			return number;
 		}
 	}
 }
