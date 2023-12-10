@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using static Ex13.services.CommonService;
 using static System.Runtime.InteropServices.JavaScript.JSType;
+using Ex13.repositories;
 
 namespace Ex13.services
 {
@@ -15,11 +16,14 @@ namespace Ex13.services
 		FresherService fresherService;
 		InternService internService;
 
+		CommonRepo commonRepo;
+
 		Dictionary<string, Employee> employees;
 
 		public EmployeeService()
 		{
-			employees = new Dictionary<string, Employee>();
+			commonRepo = new CommonRepo();
+			employees = commonRepo.Search(null, null);
 			//seed data
 			/*			employees = new Dictionary<string, Employee>() {
 							{"1", new Experience("1", "A", DateOnly.Parse("2000-2-2"), "2", "2", EmpType.Experience, 2, "a", new List<Certificate>()) },
@@ -32,7 +36,8 @@ namespace Ex13.services
 
 		public EmployeeService(CommonService commonService, ExperienceService experienceService, FresherService fresherService, InternService internService)
 		{
-			employees = new Dictionary<string, Employee>();
+			commonRepo = new CommonRepo();
+			employees = commonRepo.Search(null, null);
 			this.commonService = commonService;
 			this.experienceService = experienceService;
 			this.fresherService = fresherService;
@@ -111,7 +116,8 @@ namespace Ex13.services
 		{
 			Employee employee = SearchAll();
 			employee.ShowInfo();
-			employees.Remove(employee.Id);
+			commonRepo.DeleteEmployee(employee.Id);
+			employees = commonRepo.Search(null, null);
 			Console.WriteLine("Employee deleted");
 		}
 
@@ -145,13 +151,13 @@ namespace Ex13.services
 						}
 						break;
 					case 1:
-						searchList = SearchByType(EmpType.Experience);
+						searchList = commonRepo.Search("", EmpType.Experience);
 						break;
 					case 2:
-						searchList = SearchByType(EmpType.Fresher);
+						searchList = commonRepo.Search("", EmpType.Fresher);
 						break;
 					case 3:
-						searchList = SearchByType(EmpType.Intern);
+						searchList = commonRepo.Search("", EmpType.Intern);
 						break;
 					case 4:
 						returning = true;
@@ -184,20 +190,15 @@ namespace Ex13.services
 				return null;
 			}
 
-			if (employees.ContainsKey(id))
-			{
-				return employees[id];
-			}
-			else
+			var emps = commonRepo.Search(id, null);
+			if (emps.Count == 0)
 			{
 				return null;
 			}
-		}
 
-		private Dictionary<string, Employee> SearchByType(EmpType type)
-		{
-			var employeeRes = employees.Where(e => e.Value.EmployeeType.Equals(type)).ToDictionary(e => e.Key, e => e.Value);
-			return employeeRes;
+			Employee emp = emps.First().Value;
+
+			return emp;
 		}
 	}
 }

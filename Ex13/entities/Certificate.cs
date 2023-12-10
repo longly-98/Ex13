@@ -4,19 +4,22 @@ namespace Ex13.entities
 {
 	public class Certificate
 	{
-		private string ID {  get; set; }
-		private string Name { get; set; }
-		private string Rank { get; set; }
-		private DateOnly Date { get; set; }
+		public string ID {  get; set; }
+		public string Name { get; set; }
+		public string Rank { get; set; }
+		public DateOnly Date { get; set; }
+
+		public string EmployeeId { get; set; }
 
 		public Certificate() { }
 
-		public Certificate(string iD, string name, string rank, DateOnly date)
+		public Certificate(string iD, string name, string rank, DateOnly date, string employeeId)
 		{
 			ID = iD;
 			Name = name;
 			Rank = rank;
 			Date = date;
+			EmployeeId = employeeId;
 		}
 
 		public override string ToString()

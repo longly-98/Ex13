@@ -212,7 +212,7 @@ namespace Ex13.services
 				}
 
 				// Validate
-				certificates.Add(new Certificate(certId, certName, certRank, certDate));
+				certificates.Add(new Certificate(certId, certName, certRank, certDate, em.Id));
 			}
 
 			em.Ecertificates = certificates;

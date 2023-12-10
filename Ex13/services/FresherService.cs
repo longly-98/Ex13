@@ -1,4 +1,5 @@
 ﻿using Ex13.entities;
+using Ex13.repositories;
 using Ex13.validators;
 using System;
 using System.Collections.Generic;
@@ -13,12 +14,16 @@ namespace Ex13.services
 	internal class FresherService
 	{
 		CommonService commonService;
+		FresherRepo fresherRepo;
+		CommonRepo commonRepo;
 
 		public FresherService() { }
 
 		public FresherService(CommonService commonService)
 		{
 			this.commonService = commonService;
+			this.fresherRepo = new FresherRepo();
+			this.commonRepo = new CommonRepo();
 		}
 
 		internal EmployeeCommonInfo InputFresher(ref DateOnly graduationDate, ref string graduationRank, ref string education, bool edit, Employee? oldEmp)
@@ -103,7 +108,9 @@ namespace Ex13.services
 
 			try
 			{
-				employees.Add(emp.Id, new Fresher(emp.Id, emp.Fullname, emp.Birthday, emp.Phone, emp.Email, EmpType.Fresher, graduationDate, graduationRank, education, emp.Ecertificates));
+				Fresher employee = new Fresher(emp.Id, emp.Fullname, emp.Birthday, emp.Phone, emp.Email, EmpType.Fresher, graduationDate, graduationRank, education, emp.Ecertificates);
+				fresherRepo.AddFresher(employee);
+				employees.Add(emp.Id, employee);
 			}
 			catch (Exception e)
 			{
@@ -123,7 +130,9 @@ namespace Ex13.services
 
 			try
 			{
-				employees[oldEmp.Id] = new Fresher(oldEmp.Id, emp.Fullname, emp.Birthday, emp.Phone, emp.Email, EmpType.Fresher, graduationDate, graduationRank, education, emp.Ecertificates);
+				Fresher employee = new Fresher(oldEmp.Id, emp.Fullname, emp.Birthday, emp.Phone, emp.Email, EmpType.Fresher, graduationDate, graduationRank, education, emp.Ecertificates);
+				fresherRepo.EditFresher(employee);
+				employees[oldEmp.Id] = employee;
 			}
 			catch (Exception e)
 			{

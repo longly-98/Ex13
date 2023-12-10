@@ -1,4 +1,5 @@
 ﻿using Ex13.entities;
+using Ex13.repositories;
 using Ex13.validators;
 using System;
 using System.Collections.Generic;
@@ -13,11 +14,15 @@ namespace Ex13.services
 	internal class ExperienceService
 	{
 		CommonService commonService;
+		ExperienceRepo experienceRepo;
+		CommonRepo commonRepo;
 
 		public ExperienceService() { }
 		public ExperienceService(CommonService commonService)
 		{
 			this.commonService = commonService;
+			this.experienceRepo = new ExperienceRepo();
+			this.commonRepo = new CommonRepo();
 		}
 
 		public void AddExperience(ref Dictionary<string, Employee> employees)
@@ -28,7 +33,9 @@ namespace Ex13.services
 
 			try
 			{
-				employees.Add(emp.Id, new Experience(emp.Id, emp.Fullname, emp.Birthday, emp.Phone, emp.Email, EmpType.Experience, expInYear, proSkill, emp.Ecertificates));
+				Experience employee = new Experience(emp.Id, emp.Fullname, emp.Birthday, emp.Phone, emp.Email, EmpType.Experience, expInYear, proSkill, emp.Ecertificates);
+				employees.Add(emp.Id, employee);
+				experienceRepo.AddExperience(employee);
 			}
 			catch (Exception e)
 			{
@@ -101,13 +108,17 @@ namespace Ex13.services
 
 			try
 			{
-				employees[oldEmp.Id] = new Experience(oldEmp.Id, emp.Fullname, emp.Birthday, emp.Phone, emp.Email, EmpType.Experience, expInYear, proSkill, emp.Ecertificates);
+				Experience employee = new Experience(oldEmp.Id, emp.Fullname, emp.Birthday, emp.Phone, emp.Email, EmpType.Experience, expInYear, proSkill, emp.Ecertificates);
+				experienceRepo.EditExperience(employee);
+				employees[oldEmp.Id] = employee;
 			}
 			catch (Exception e)
 			{
 				Console.WriteLine(e.Message);
 				Console.WriteLine("Fail to edit\n\n");
 			}
+
+			employees = commonRepo.Search(null, null);
 		}
 	}
 }

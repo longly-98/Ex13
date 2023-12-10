@@ -1,4 +1,5 @@
 ﻿using Ex13.entities;
+using Ex13.repositories;
 using Ex13.validators;
 using System;
 using System.Collections.Generic;
@@ -13,12 +14,16 @@ namespace Ex13.services
 	internal class InternService
 	{
 		CommonService commonService;
+		InternRepo internRepo;
+		CommonRepo commonRepo;
 
 		public InternService() { }
 
 		public InternService(CommonService commonService)
 		{
 			this.commonService = commonService;
+			this.internRepo = new InternRepo();
+			this.commonRepo = new CommonRepo();
 		}
 
 		internal EmployeeCommonInfo InputIntern(ref string majors, ref int semester, ref string university, bool edit, Employee? oldEmp)
@@ -104,7 +109,9 @@ namespace Ex13.services
 
 			try
 			{
-				employees.Add(emp.Id, new Intern(emp.Id, emp.Fullname, emp.Birthday, emp.Phone, emp.Email, EmpType.Intern, majors, semester, university, emp.Ecertificates));
+				Intern employee = new Intern(emp.Id, emp.Fullname, emp.Birthday, emp.Phone, emp.Email, EmpType.Intern, majors, semester, university, emp.Ecertificates);
+				internRepo.AddIntern(employee);
+				employees.Add(emp.Id, employee);
 			}
 			catch (Exception e)
 			{
@@ -123,7 +130,9 @@ namespace Ex13.services
 			
 			try
 			{
-				employees[oldEmp.Id] = new Intern(oldEmp.Id, emp.Fullname, emp.Birthday, emp.Phone, emp.Email, EmpType.Intern, majors, semester, university, emp.Ecertificates);
+				Intern employee = new Intern(oldEmp.Id, emp.Fullname, emp.Birthday, emp.Phone, emp.Email, EmpType.Intern, majors, semester, university, emp.Ecertificates);
+				internRepo.EditIntern(employee);
+				employees[oldEmp.Id] = employee;
 			}
 			catch (Exception e)
 			{
