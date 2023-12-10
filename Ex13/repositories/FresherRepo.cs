@@ -85,32 +85,5 @@ namespace Ex13.repositories
 
 			}
 		}
-
-		public void DeleteFresher(string id)
-		{
-			using (var conn = Connection.GetConnection())
-			{
-				string query1 = $"DELETE FROM fresher WHERE employee_id = {id}";
-				string query2 = $"DELETE FROM employee WHERE id = {id}";
-
-				conn.Open();
-				SqlTransaction transaction = conn.BeginTransaction();
-
-				try
-				{
-					SqlCommand cmd1 = new SqlCommand(query1, conn, transaction);
-					SqlCommand cmd2 = new SqlCommand(query2, conn, transaction);
-
-					cmd1.ExecuteNonQuery();
-					cmd2.ExecuteNonQuery();
-
-					commonRepo.DeleteCertificates(id, conn, transaction);
-				}
-				catch
-				{
-					transaction.Rollback();
-				}
-			}
-		}
 	}
 }
